@@ -6,6 +6,7 @@ const cors = require('cors');
 const connectDB = require('./db/connect');
 const authRoutes = require('./routes/auth');
 const messageRoutes = require('./routes/messages');
+const roomRoutes = require('./routes/rooms');
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/rooms', roomRoutes);
 
 // Connect to MongoDB
 connectDB();
@@ -42,34 +44,37 @@ io.on('connection', (socket) => {
     socket.username = username;
     onlineUsers.set(username, socket.id);
     console.log(`${username} joined`);
-
-    // Broadcast online users to all clients
     io.emit('online_users', Array.from(onlineUsers.keys()));
   });
 
-  socket.on('send_message', async ({ recipient, content }) => {
+  socket.on('join_room', (roomId) => {
+    socket.join(roomId);
+    console.log(`${socket.username} joined room: ${roomId}`);
+  });
+
+  socket.on('leave_room', (roomId) => {
+    socket.leave(roomId);
+    console.log(`${socket.username} left room: ${roomId}`);
+  });
+
+  socket.on('send_message', async ({ roomId, content }) => {
     const sender = socket.username;
+    if (!sender) return;
+
     const Message = require('./models/Message');
 
     try {
-      const newMessage = new Message({ sender, recipient, content });
+      const newMessage = new Message({ sender, roomId, content });
       await newMessage.save();
 
-      const recipientSocketId = onlineUsers.get(recipient);
-      if (recipientSocketId) {
-        io.to(recipientSocketId).emit('receive_message', {
-          sender,
-          content,
-          timestamp: newMessage.timestamp
-        });
-      }
-
-      // Send confirmation back to sender
-      socket.emit('message_sent', {
-        recipient,
+      // Emit message to everyone in the room
+      io.to(roomId).emit('receive_message', {
+        sender,
+        roomId,
         content,
         timestamp: newMessage.timestamp
       });
+
     } catch (error) {
       console.error('Error sending message:', error);
       socket.emit('message_error', { error: 'Failed to send message' });
@@ -80,8 +85,6 @@ io.on('connection', (socket) => {
     if (socket.username) {
       onlineUsers.delete(socket.username);
       console.log(`${socket.username} disconnected`);
-
-      // Broadcast updated online users
       io.emit('online_users', Array.from(onlineUsers.keys()));
     }
   });

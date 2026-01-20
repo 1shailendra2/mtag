@@ -6,17 +6,17 @@ import { ChatMessages } from "./chat-messages";
 import { ChatInput } from "./chat-input";
 
 export function ChatLayout() {
-    const [selectedContact, setSelectedContact] = useState<string | null>(null);
+    const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
 
     return (
         <div className="flex h-screen bg-background overflow-hidden selection:bg-primary/20">
             <ChatSidebar
-                onSelectContact={setSelectedContact}
-                selectedContact={selectedContact}
+                onSelectRoom={setSelectedRoomId}
+                selectedRoomId={selectedRoomId}
             />
             <div className="flex-1 flex flex-col min-w-0">
-                <ChatMessages selectedContact={selectedContact} />
-                <ChatInput selectedContact={selectedContact} />
+                <ChatMessages selectedRoomId={selectedRoomId} />
+                <ChatInput selectedRoomId={selectedRoomId} />
             </div>
         </div>
     );

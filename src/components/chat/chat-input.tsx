@@ -7,18 +7,18 @@ import { useState } from "react";
 import { getSocket } from "@/lib/socket";
 
 interface ChatInputProps {
-    selectedContact: string | null;
+    selectedRoomId: string | null;
 }
 
-export function ChatInput({ selectedContact }: ChatInputProps) {
+export function ChatInput({ selectedRoomId }: ChatInputProps) {
     const [message, setMessage] = useState("");
 
     const handleSend = () => {
-        if (!message.trim() || !selectedContact) return;
+        if (!message.trim() || !selectedRoomId) return;
 
         const socket = getSocket();
         socket.emit('send_message', {
-            recipient: selectedContact,
+            roomId: selectedRoomId,
             content: message.trim()
         });
 
@@ -39,7 +39,7 @@ export function ChatInput({ selectedContact }: ChatInputProps) {
                     variant="ghost"
                     size="icon"
                     className="rounded-full shrink-0 hover:bg-primary/10 hover:text-primary transition-colors"
-                    disabled={!selectedContact}
+                    disabled={!selectedRoomId}
                 >
                     <Plus className="w-5 h-5" />
                 </Button>
@@ -49,15 +49,15 @@ export function ChatInput({ selectedContact }: ChatInputProps) {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder={selectedContact ? "Type a message..." : "Select a contact first..."}
-                        disabled={!selectedContact}
+                        placeholder={selectedRoomId ? "Send a message to this room..." : "Select a room first..."}
+                        disabled={!selectedRoomId}
                         className="w-full bg-muted/50 border-none rounded-2xl pl-12 pr-12 focus-visible:ring-primary/40 focus-visible:bg-muted/80 transition-all py-6 h-auto"
                     />
                     <Button
                         variant="ghost"
                         size="icon"
                         className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full hover:bg-transparent text-muted-foreground hover:text-primary transition-colors"
-                        disabled={!selectedContact}
+                        disabled={!selectedRoomId}
                     >
                         <ImageIcon className="w-5 h-5" />
                     </Button>
@@ -65,7 +65,7 @@ export function ChatInput({ selectedContact }: ChatInputProps) {
                         variant="ghost"
                         size="icon"
                         className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full hover:bg-transparent text-muted-foreground hover:text-primary transition-colors"
-                        disabled={!selectedContact}
+                        disabled={!selectedRoomId}
                     >
                         <Smile className="w-5 h-5" />
                     </Button>
@@ -74,7 +74,7 @@ export function ChatInput({ selectedContact }: ChatInputProps) {
                 <Button
                     size="icon"
                     className={message.length > 0 ? "rounded-full bg-primary hover:bg-primary/90 transition-all scale-100" : "rounded-full bg-muted text-muted-foreground transition-all"}
-                    disabled={message.length === 0 || !selectedContact}
+                    disabled={message.length === 0 || !selectedRoomId}
                     onClick={handleSend}
                 >
                     {message.length > 0 ? <Send className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
