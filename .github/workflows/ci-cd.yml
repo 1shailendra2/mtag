@@ -9,7 +9,7 @@ on:
 env:
   ACR_NAME: chatregi
   ACR_LOGIN_SERVER: chatregi.azurecr.io
-  HELM_REPO: https://github.com/1shailendra2/chart
+  HELM_REPO: 1shailendra2/chart
   HELM_REPO_BRANCH: main
 
 jobs:
