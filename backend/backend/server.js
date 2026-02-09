@@ -26,6 +26,20 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Health check endpoint for Kubernetes probes
+app.get('/health', (req, res) => {
+  const mongoose = require('mongoose');
+  const dbStatus = mongoose.connection.readyState;
+
+  if (dbStatus === 1) {
+    // 1 = connected
+    res.status(200).json({ status: 'healthy', database: 'connected' });
+  } else {
+    // 0 = disconnected, 2 = connecting, 3 = disconnecting
+    res.status(503).json({ status: 'unhealthy', database: 'disconnected' });
+  }
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
