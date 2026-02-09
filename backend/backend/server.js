@@ -14,14 +14,20 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000",
+      "http://secondbrainbackend.me",
+      "https://secondbrainbackend.me"
+    ],  
     methods: ["GET", "POST"]
   }
 });
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000",
+    "http://secondbrainbackend.me",
+    "https://secondbrainbackend.me"
+  ],
   credentials: true
 }));
 app.use(express.json());
