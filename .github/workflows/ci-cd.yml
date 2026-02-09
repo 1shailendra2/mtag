@@ -7,9 +7,9 @@ on:
     branches: [main]
 
 env:
-  ACR_NAME: your-acr-name
-  ACR_LOGIN_SERVER: your-acr-name.azurecr.io
-  HELM_REPO: YOUR_USERNAME/msgapp-helm
+  ACR_NAME: chatregi
+  ACR_LOGIN_SERVER: chatregi.azurecr.io
+  HELM_REPO: https://github.com/1shailendra2/chart
   HELM_REPO_BRANCH: main
 
 jobs:
