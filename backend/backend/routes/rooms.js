@@ -3,7 +3,6 @@ const router = express.Router();
 const Room = require('../models/Room');
 const authMiddleware = require('../middleware/auth');
 
-// GET /api/rooms - List all rooms
 router.get('/', authMiddleware, async (req, res) => {
     try {
         const rooms = await Room.find().sort({ createdAt: -1 });
@@ -13,7 +12,6 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
-// POST /api/rooms - Create a new room
 router.post('/', authMiddleware, async (req, res) => {
     try {
         const { name } = req.body;

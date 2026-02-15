@@ -9,12 +9,10 @@ async function connect() {
         connection = await amqp.connect(rabbitmqUrl);
         channel = await connection.createChannel();
 
-        // Declare queue with durability
         await channel.assertQueue('message_save', { durable: true });
 
         console.log('✅ Connected to RabbitMQ');
 
-        // Handle connection errors
         connection.on('error', (err) => {
             console.error('❌ RabbitMQ connection error:', err);
         });

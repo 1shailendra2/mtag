@@ -26,7 +26,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
     useEffect(() => {
-        // Check if user is logged in on mount
         const token = localStorage.getItem('token');
         const savedUser = localStorage.getItem('user');
 
@@ -56,7 +55,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const register = async (username: string, password: string) => {
         try {
             await api.post('/auth/register', { username, password });
-            // Auto-login after registration
             await login(username, password);
         } catch (error: any) {
             throw new Error(error.response?.data?.error || 'Registration failed');

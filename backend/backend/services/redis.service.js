@@ -1,6 +1,5 @@
 const Redis = require('ioredis');
 
-// Create Redis client
 const redis = new Redis({
     host: process.env.REDIS_HOST || 'msgapp-redis',
     port: process.env.REDIS_PORT || 6379,

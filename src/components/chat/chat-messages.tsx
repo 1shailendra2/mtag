@@ -27,7 +27,6 @@ export function ChatMessages({ selectedRoomId }: ChatMessagesProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Fetch message history when room is selected
     useEffect(() => {
         if (!selectedRoomId || !user) return;
 
@@ -42,7 +41,6 @@ export function ChatMessages({ selectedRoomId }: ChatMessagesProps) {
 
         fetchMessages();
 
-        // Join room in Socket.io
         const socket = getSocket();
         socket.emit('join_room', selectedRoomId);
 
@@ -51,7 +49,6 @@ export function ChatMessages({ selectedRoomId }: ChatMessagesProps) {
         };
     }, [selectedRoomId, user]);
 
-    // Listen for incoming messages via Socket.io
     useEffect(() => {
         const socket = getSocket();
 
@@ -73,7 +70,6 @@ export function ChatMessages({ selectedRoomId }: ChatMessagesProps) {
         };
     }, [selectedRoomId, user]);
 
-    // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -98,7 +94,6 @@ export function ChatMessages({ selectedRoomId }: ChatMessagesProps) {
 
     return (
         <div className="flex flex-col h-full bg-background/50 backdrop-blur-sm">
-            {/* Messaging Header */}
             <div className="p-4 border-b flex items-center justify-between bg-background/80 backdrop-blur-md sticky top-0 z-10">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
@@ -116,7 +111,6 @@ export function ChatMessages({ selectedRoomId }: ChatMessagesProps) {
                 </div>
             </div>
 
-            {/* Messages Area */}
             <ScrollArea className="flex-1 p-6" ref={scrollRef}>
                 <div className="space-y-6 max-w-4xl mx-auto">
                     {messages.length === 0 ? (

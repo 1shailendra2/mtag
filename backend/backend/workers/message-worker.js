@@ -2,7 +2,6 @@ const amqp = require('amqplib');
 const mongoose = require('mongoose');
 const Message = require('../models/Message');
 
-// MongoDB connection
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
@@ -23,7 +22,7 @@ async function startWorker() {
         const channel = await connection.createChannel();
 
         await channel.assertQueue('message_save', { durable: true });
-        channel.prefetch(1); // Process one message at a time
+        channel.prefetch(1);
 
         console.log('✅ Worker connected to RabbitMQ');
         console.log('⏳ Waiting for messages...');
@@ -33,7 +32,6 @@ async function startWorker() {
                 try {
                     const messageData = JSON.parse(msg.content.toString());
 
-                    // Save to MongoDB
                     const newMessage = new Message({
                         sender: messageData.sender,
                         roomId: messageData.roomId,
@@ -45,18 +43,15 @@ async function startWorker() {
 
                     console.log(`💾 Message saved to MongoDB - Room: ${messageData.roomId}, Sender: ${messageData.sender}`);
 
-                    // Acknowledge message
                     channel.ack(msg);
                 } catch (error) {
                     console.error('❌ Error processing message:', error);
 
-                    // Reject and requeue on error
                     channel.nack(msg, false, true);
                 }
             }
         });
 
-        // Handle connection errors
         connection.on('error', (err) => {
             console.error('❌ RabbitMQ connection error:', err);
         });
@@ -72,7 +67,6 @@ async function startWorker() {
     }
 }
 
-// Graceful shutdown
 process.on('SIGINT', async () => {
     console.log('\n⏹️  Shutting down worker...');
     await mongoose.connection.close();
@@ -85,7 +79,6 @@ process.on('SIGTERM', async () => {
     process.exit(0);
 });
 
-// Start the worker
 startWorker().catch((error) => {
     console.error('❌ Worker startup failed:', error);
     process.exit(1);

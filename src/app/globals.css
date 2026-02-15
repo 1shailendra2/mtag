@@ -125,7 +125,6 @@
   }
 }
 
-/* Custom transitions and scrollbar */
 * {
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }

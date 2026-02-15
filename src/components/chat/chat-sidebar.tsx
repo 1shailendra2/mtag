@@ -61,7 +61,6 @@ export function ChatSidebar({ onSelectRoom, selectedRoomId }: ChatSidebarProps) 
 
     return (
         <div className="flex flex-col h-full border-r bg-muted/30 w-full md:w-80 lg:w-96">
-            {/* Sidebar Header */}
             <div className="p-4 border-b flex items-center justify-between">
                 <div>
                     <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
@@ -82,7 +81,6 @@ export function ChatSidebar({ onSelectRoom, selectedRoomId }: ChatSidebarProps) 
                 </div>
             </div>
 
-            {/* Create Room */}
             <div className="p-4 border-b">
                 {isCreating ? (
                     <form onSubmit={handleCreateRoom} className="flex gap-2">
@@ -108,7 +106,6 @@ export function ChatSidebar({ onSelectRoom, selectedRoomId }: ChatSidebarProps) 
                 )}
             </div>
 
-            {/* Search */}
             <div className="p-4">
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -121,7 +118,6 @@ export function ChatSidebar({ onSelectRoom, selectedRoomId }: ChatSidebarProps) 
                 </div>
             </div>
 
-            {/* Rooms List */}
             <ScrollArea className="flex-1">
                 <div className="p-2 space-y-1">
                     {filteredRooms.length === 0 ? (
