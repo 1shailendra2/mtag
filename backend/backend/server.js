@@ -13,6 +13,15 @@ const roomRoutes = require('./routes/rooms');
 
 dotenv.config();
 
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics();
+
+const messagesSentCounter = new client.Counter({
+  name: 'msgapp_messages_sent_total',
+  help: 'Total number of messages sent in the application',
+});
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
@@ -70,7 +79,10 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
-app.use('/api/rooms', roomRoutes);
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.send(await client.register.metrics());
+});
 
 connectDB();
 
@@ -107,6 +119,7 @@ io.on('connection', (socket) => {
 
       if (channel) {
         channel.sendToQueue('message_save', Buffer.from(JSON.stringify(messagePayload)));
+        messagesSentCounter.inc();
       } else {
         console.error("RabbitMQ channel not available");
       }
