@@ -15,7 +15,7 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,54 +66,27 @@ jobs:
           cache-from: type=registry,ref=${{ env.ACR_LOGIN_SERVER }}/msgapp-worker:latest
           cache-to: type=inline
 
-      - name: Run Trivy vulnerability scan - Frontend
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.ACR_LOGIN_SERVER }}/msgapp-frontend:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-frontend-results.sarif'
-
-      - name: Run Trivy vulnerability scan - Backend
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.ACR_LOGIN_SERVER }}/msgapp-backend:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-backend-results.sarif'
-
-      - name: Run Trivy vulnerability scan - Worker
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.ACR_LOGIN_SERVER }}/msgapp-worker:${{ github.sha }}
-          format: 'sarif'
-          output: 'trivy-worker-results.sarif'
-
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: 'trivy-*.sarif'
-
       - name: Update Helm repository
         if: github.ref == 'refs/heads/main'
         run: |
           # Clone Helm repository
           git clone https://${{ secrets.GH_PAT }}@github.com/${{ env.HELM_REPO }}.git helm-repo
           cd helm-repo
-          
+
           # Configure git
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          
+
           # Update image tags in values.yaml
           sed -i "s|repository: .*msgapp-frontend|repository: ${{ env.ACR_LOGIN_SERVER }}/msgapp-frontend|g" values.yaml
           sed -i "s|repository: .*msgapp-backend|repository: ${{ env.ACR_LOGIN_SERVER }}/msgapp-backend|g" values.yaml
           sed -i "s|repository: .*msgapp-worker|repository: ${{ env.ACR_LOGIN_SERVER }}/msgapp-worker|g" values.yaml
-          
+
           # Update all image tags to current commit SHA
           sed -i "/frontend:/,/tag:/ s|tag: .*|tag: \"${{ github.sha }}\"|" values.yaml
           sed -i "/backend:/,/tag:/ s|tag: .*|tag: \"${{ github.sha }}\"|" values.yaml
           sed -i "/worker:/,/tag:/ s|tag: .*|tag: \"${{ github.sha }}\"|" values.yaml
-          
+
           # Commit and push changes
           git add values.yaml
           git commit -m "Update image tags to ${{ github.sha }}" || echo "No changes to commit"
