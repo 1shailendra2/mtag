@@ -69,25 +69,21 @@ jobs:
       - name: Update Helm repository
         if: github.ref == 'refs/heads/main'
         run: |
-          # Clone Helm repository
+
           git clone https://${{ secrets.GH_PAT }}@github.com/${{ env.HELM_REPO }}.git helm-repo
           cd helm-repo
 
-          # Configure git
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
 
-          # Update image tags in values.yaml
           sed -i "s|repository: .*msgapp-frontend|repository: ${{ env.ACR_LOGIN_SERVER }}/msgapp-frontend|g" values.yaml
           sed -i "s|repository: .*msgapp-backend|repository: ${{ env.ACR_LOGIN_SERVER }}/msgapp-backend|g" values.yaml
           sed -i "s|repository: .*msgapp-worker|repository: ${{ env.ACR_LOGIN_SERVER }}/msgapp-worker|g" values.yaml
 
-          # Update all image tags to current commit SHA
           sed -i "/frontend:/,/tag:/ s|tag: .*|tag: \"${{ github.sha }}\"|" values.yaml
           sed -i "/backend:/,/tag:/ s|tag: .*|tag: \"${{ github.sha }}\"|" values.yaml
           sed -i "/worker:/,/tag:/ s|tag: .*|tag: \"${{ github.sha }}\"|" values.yaml
 
-          # Commit and push changes
           git add values.yaml
           git commit -m "Update image tags to ${{ github.sha }}" || echo "No changes to commit"
           git push origin ${{ env.HELM_REPO_BRANCH }}

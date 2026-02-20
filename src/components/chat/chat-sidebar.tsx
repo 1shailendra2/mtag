@@ -128,7 +128,7 @@ export function ChatSidebar({ onSelectRoom, selectedRoomId }: ChatSidebarProps) 
                         filteredRooms.map((room) => (
                             <div
                                 key={room._id}
-                                onClick={() => onSelectRoom(room.name)} // Using room name as roomId for simplicity in this implementation
+                                onClick={() => onSelectRoom(room.name)} 
                                 className={cn(
                                     "group flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-accent transition-all duration-200",
                                     selectedRoomId === room.name ? "bg-accent/50" : ""

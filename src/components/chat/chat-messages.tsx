@@ -13,7 +13,7 @@ import api from "@/lib/api";
 interface Message {
     _id?: string;
     sender: string;
-    roomId: string; // Changed from recipient to roomId
+    roomId: string; 
     content: string;
     timestamp: Date;
 }
